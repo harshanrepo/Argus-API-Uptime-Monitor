@@ -1,4 +1,4 @@
-from flask import Blueprint, request,render_template
+from flask import Blueprint, request,render_template,redirect
 auth=Blueprint('auth',__name__)
 from database.schema import db,Users
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -16,6 +16,7 @@ def register():
         new_user=Users(email=email,password_hash=password_hash)
         db.session.add(new_user)
         db.session.commit()
+        return redirect('/login')
     return render_template('register.html')
 
 
