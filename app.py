@@ -3,6 +3,7 @@ from flask import Flask,render_template
 from database.schema import db
 from dotenv import load_dotenv
 from routes.auth import auth
+from routes.dashboard import dashboard
 
 load_dotenv()
 app=Flask(__name__)
@@ -10,7 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI']=os.getenv('DATABASE_URL')
 app.config['SECRET_KEY']=os.getenv('SECRET_KEY')
 db.init_app(app)
 app.register_blueprint(auth)
-
+app.register_blueprint(dashboard)
 
 @app.route("/", methods=["GET"])
 def base():

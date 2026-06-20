@@ -1,6 +1,6 @@
-from flask import Blueprint, request,render_template,redirect
+from flask import Blueprint, request,render_template,redirect,session
 auth=Blueprint('auth',__name__)
-from database.schema import db,Users
+from database.schema import db,Users 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -22,4 +22,25 @@ def register():
 
 @auth.route('/login',methods=['POST','GET'])
 def login():
+    if request.method=="POST":
+        email=request.form["email"]
+        password=request.form["password"]
+        email_exist=Users.query.filter_by(email=email).first()
+        if not email_exist:
+            return "User not found"
+        hash_password=check_password_hash(email_exist.password_hash,password)
+        if hash_password:
+            session['user_id']=email_exist.id
+        else:
+            return "error"
+        return redirect('/dashboard')
     return render_template('login.html')
+
+
+@auth.route('/logout',methods=["GET"])
+def logout():
+    session.clear()
+    return redirect('/register')
+
+
+
