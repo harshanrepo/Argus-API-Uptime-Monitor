@@ -2,10 +2,6 @@ from flask import Blueprint,render_template,session,redirect,request
 from database.schema import db,Users,Endpoint
 dashboard=Blueprint('dashboard',__name__)
 
-@dashboard.route('/dashboard')
-def index():
-    return render_template('dashboard.html')
-
 @dashboard.route('/data_add',methods=["POST","GET"])
 def add():
     if not 'user_id' in session:
@@ -31,3 +27,22 @@ def delete(id):
     db.session.delete(endpoint)
     db.session.commit()
     return redirect('/dashboard')
+
+@dashboard.route('/update/<int:id>',methods=["POST"])
+def update(id):
+    if 'user_id' not in session:
+        return redirect('/login')
+    endpoint=Endpoint.query.get(id)
+    if not endpoint:
+        return redirect('/dashboard')
+    endpoint.name = request.form['name']
+    endpoint.url = request.form['url']
+    db.session.commit()
+    return redirect('/dashboard')
+
+@dashboard.route('/dashboard',methods=["GET"])
+def display():
+    if 'user_id' not in session:
+        return redirect('/login')
+    view=Endpoint.query.filter_by(user_id=session['user_id']).all()
+    return render_template('/dashboard',view=view)
