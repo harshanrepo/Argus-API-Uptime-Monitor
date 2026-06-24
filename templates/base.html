@@ -3,11 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Argus</title>
+    <title>Argus - API Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Welcome to Argus</h1>
-    <a href="/register">Register</a>
-    <a href="/login">Login</a>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900 text-white px-8 py-4 flex justify-between items-center shadow-lg">
+        
+        <!-- Logo -->
+        <div class="text-xl font-bold tracking-wide">
+            👁️ Argus
+        </div>
+
+        <!-- Nav Links -->
+        <div class="flex gap-6">
+            <a href="/dashboard" class="hover:text-blue-400 transition">Dashboard</a>
+            <a href="/logout" class="hover:text-red-400 transition">Logout</a>
+        </div>
+
+    </nav>
+
+    <!-- Page Content -->
+    <main class="px-8 py-6">
+        {% block content %}
+        {% endblock %}
+    </main>
+
 </body>
 </html>
