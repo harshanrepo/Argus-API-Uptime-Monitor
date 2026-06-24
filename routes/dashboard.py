@@ -28,21 +28,24 @@ def delete(id):
     db.session.commit()
     return redirect('/dashboard')
 
-@dashboard.route('/update/<int:id>',methods=["POST"])
+@dashboard.route('/update/<int:id>',methods=["POST","GET"])
 def update(id):
     if 'user_id' not in session:
         return redirect('/login')
     endpoint=Endpoint.query.get(id)
     if not endpoint:
         return redirect('/dashboard')
-    endpoint.name = request.form['name']
-    endpoint.url = request.form['url']
-    db.session.commit()
-    return redirect('/dashboard')
+    if request.method == 'GET':
+        return render_template('update.html', endpoint=endpoint)
+    if request.method == 'POST':
+        endpoint.name = request.form['name']
+        endpoint.url = request.form['url']
+        db.session.commit()
+        return redirect('/dashboard')
 
 @dashboard.route('/dashboard',methods=["GET"])
 def display():
     if 'user_id' not in session:
         return redirect('/login')
     view=Endpoint.query.filter_by(user_id=session['user_id']).all()
-    return render_template('/dashboard',view=view)
+    return render_template('dashboard.html',view=view)

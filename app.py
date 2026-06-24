@@ -1,4 +1,5 @@
 import os
+import scheduler
 from flask import Flask,render_template
 from database.schema import db
 from dotenv import load_dotenv
@@ -16,9 +17,11 @@ app.register_blueprint(dashboard)
 @app.route("/", methods=["GET"])
 def base():
     return render_template('base.html')
+    
 
 with app.app_context():
     db.create_all()
     print("Tables created successfully!")
+    scheduler.start()
 if __name__ == '__main__':
     app.run(debug=True)

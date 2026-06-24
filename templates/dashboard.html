@@ -1,12 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Argurs - Dashboard</title>
 </head>
+
 <body>
     <h1>Dashboard</h1>
     <a href="/logout">Logout</a>
+    <form method="POST" action='/data_add'>
+        <label for="name">Site name:</label>
+        <input type="text" placeholder="Site name" name="name" id="name">
+        <label for="site_url">Site URL:</label>
+        <input type="url" placeholder="Enter URL" name="url" id="site_url">
+        <button type="submit">Add</button>
+    </form>
+
+    <table border="2px solid black">
+        <thead>
+            <tr>
+                <th>Site Name</th>
+                <th>Site URL</th>
+                <th>is_active</th>
+                <th>created_by</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for endpoint in view %}
+            <tr>
+                <td>{{ endpoint.name }}</td>
+                <td>{{ endpoint.url }}</td>
+                <td>{{ endpoint.is_active }}</td>
+                <td>{{ endpoint.created_at.strftime('%d-%m-%Y') }}</td>
+                <td>
+                    <form method="POST" action="/delete/{{ endpoint.id }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+                <td>
+                    <a href="/update/{{ endpoint.id }}">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
 </body>
+
 </html>
