@@ -24,30 +24,50 @@
             <tr>
                 <th>Site Name</th>
                 <th>Site URL</th>
-                <th>is_active</th>
-                <th>created_by</th>
+                <th>Status Code</th>
+                <th>Time Elapsed</th>
             </tr>
         </thead>
         <tbody>
-            {% for endpoint in view %}
+            {% for endpoint in endpoints %}
             <tr>
                 <td>{{ endpoint.name }}</td>
                 <td>{{ endpoint.url }}</td>
-                <td>{{ endpoint.is_active }}</td>
-                <td>{{ endpoint.created_at.strftime('%d-%m-%Y') }}</td>
                 <td>
-                    <form method="POST" action="/delete/{{ endpoint.id }}">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-                <td>
-                    <a href="/update/{{ endpoint.id }}">Edit</a>
-                </td>
+                    {% if logs[endpoint.id] and logs[endpoint.id].status_code %}
+                    {{ logs[endpoint.id].status_code }}
+                    {% else %}
+                    --
+                    {% endif %}
+                    </td>
+
+                    <td>
+                        {% if logs[endpoint.id] and logs[endpoint.id].response_time %}
+                        {{ "%.2f"|format(logs[endpoint.id].response_time) }}s
+                        {% else %}
+                        --
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="/delete/{{ endpoint.id }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="/update/{{ endpoint.id }}">Edit</a>
+                    </td>
             </tr>
             {% endfor %}
 
         </tbody>
     </table>
+    <!-- Add this below table -->
+    <div>
+        <p>Total sites: {{ total }}</p>
+        <p>UP: {{ up }}</p>
+        <p>DOWN: {{ down }}</p>
+        <p>Average Response Time: {{ avg_time }}s</p>
+    </div>
 </body>
 
 </html>

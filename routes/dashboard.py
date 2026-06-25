@@ -1,20 +1,24 @@
 from flask import Blueprint,render_template,session,redirect,request
-from database.schema import db,Users,Endpoint
+from database.schema import db,Users,Endpoint,Pinglog
 dashboard=Blueprint('dashboard',__name__)
 
-@dashboard.route('/data_add',methods=["POST","GET"])
+@dashboard.route('/data_add', methods=["POST", "GET"])
 def add():
     if not 'user_id' in session:
         return redirect('/login')
-    if request.method=='POST':
-        name=request.form['name']
-        url=request.form['url']
-        user_exit=Endpoint.query.filter_by(url=url).first()
+    if request.method == 'POST':
+        name = request.form['name']
+        url = request.form['url']
+        user_exit = Endpoint.query.filter_by(url=url).first()
         if user_exit:
             return 'URL exist already'
-        new_endpoint=Endpoint(name=name,url=url,user_id=session['user_id'])
+        new_endpoint = Endpoint(name=name, url=url, user_id=session['user_id'])
         db.session.add(new_endpoint)
-        db.session.commit() 
+        db.session.commit()
+
+        from scheduler import pingall
+        pingall()
+
         return redirect('/dashboard')
     
 @dashboard.route('/delete/<int:id>',methods=["POST"])
@@ -47,5 +51,14 @@ def update(id):
 def display():
     if 'user_id' not in session:
         return redirect('/login')
-    view=Endpoint.query.filter_by(user_id=session['user_id']).all()
-    return render_template('dashboard.html',view=view)
+    endpoints = Endpoint.query.filter_by(user_id=session['user_id']).all()
+    logs = {}
+    for endpoint in endpoints:
+        latest_log = Pinglog.query.filter_by(endpoint_id=endpoint.id).order_by(Pinglog.checked_at.desc()).first()
+        logs[endpoint.id] = latest_log
+    total=len(endpoints)
+    up = sum(1 for log in logs.values() if log and log.is_up == True)
+    down = sum(1 for log in logs.values() if log and log.is_up == False)
+    times = [log.response_time for log in logs.values() if log and log.response_time]
+    avg_time = round(sum(times) / len(times), 2) if times else 0
+    return render_template('dashboard.html',endpoints=endpoints,logs=logs,total=total,up=up,down=down,avg_time=avg_time)
