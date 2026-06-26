@@ -1,73 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Argurs - Dashboard</title>
+    <title>Argus - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body>
-    <h1>Dashboard</h1>
-    <a href="/logout">Logout</a>
-    <a href="/">Home</a>
-    <form method="POST" action='/data_add'>
-        <label for="name">Site name:</label>
-        <input type="text" placeholder="Site name" name="name" id="name">
-        <label for="site_url">Site URL:</label>
-        <input type="url" placeholder="Enter URL" name="url" id="site_url">
-        <button type="submit">Add</button>
-    </form>
+<body class="bg-black text-white font-['Space_Grotesk'] min-h-screen p-4"
+    style="background: radial-gradient(ellipse 80% 60% at center, #1a1560 0%, #000000 70%);">
 
-    <table border="2px solid black">
-        <thead>
-            <tr>
-                <th>Site Name</th>
-                <th>Site URL</th>
-                <th>Status Code</th>
-                <th>Time Elapsed</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for endpoint in endpoints %}
-            <tr>
-                <td>{{ endpoint.name }}</td>
-                <td>{{ endpoint.url }}</td>
-                <td>
-                    {% if logs[endpoint.id] and logs[endpoint.id].status_code %}
-                    {{ logs[endpoint.id].status_code }}
-                    {% else %}
-                    --
-                    {% endif %}
-                    </td>
+    <!-- Outer glass card -->
+    <div class="min-h-[calc(100vh-2rem)] rounded-2xl flex flex-col overflow-hidden"
+        style="background: rgba(255,255,255,0.02);
+               border: 1px solid rgba(255,255,255,0.1);
+               backdrop-filter: blur(20px);
+               -webkit-backdrop-filter: blur(20px);">
 
-                    <td>
-                        {% if logs[endpoint.id] and logs[endpoint.id].response_time %}
-                        {{ "%.2f"|format(logs[endpoint.id].response_time) }}s
-                        {% else %}
-                        --
-                        {% endif %}
-                    </td>
-                    <td>
-                        <form method="POST" action="/delete/{{ endpoint.id }}">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
-                    <td>
-                        <a href="/update/{{ endpoint.id }}">Edit</a>
-                    </td>
-            </tr>
-            {% endfor %}
+        <!-- Top Navbar — no bottom border -->
+        <div class="flex justify-between items-center px-8 py-5">
+            <h1 class="text-white font-bold text-xl">Argus</h1>
+            <h2 class="text-white font-semibold text-base">Dashboard</h2>
+        </div>
 
-        </tbody>
-    </table>
-    <!-- Add this below table -->
-    <div>
-        <p>Total sites: {{ total }}</p>
-        <p>UP: {{ up }}</p>
-        <p>DOWN: {{ down }}</p>
-        <p>Average Response Time: {{ avg_time }}s</p>
+        <!-- Body layout -->
+        <div class="flex flex-1">
+
+            <!-- Sidebar — no right border -->
+            <div class="w-36 flex flex-col justify-center gap-3 px-5 py-6">
+                <a href="/"
+                    class="flex items-center gap-3  hover:text-white transition text-sm py-2 px-3 rounded-lg hover:bg-white/5">
+                    <span><i class="fa fa-home"></i></span> Home
+                </a>
+                <a href="/logout"
+                    class="flex items-center gap-3  hover:text-white transition text-sm py-2 px-3 rounded-lg hover:bg-white/5">
+                    <span><i class="fa fa-sign-out""></i></span> Logout
+                </a>
+            </div>
+
+            <!-- Main content -->
+            <div class="flex-1 flex flex-col">
+
+                <!-- Add form row — no borders -->
+                <div class="flex items-end gap-4 px-6 py-5">
+
+                    <!-- Search -->
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-lg"
+                        style="border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);">
+                        <span class="text-gray-500 text-sm"><i class="fa fa-search"></i></span>
+                        <input type="text" id="searchInput" placeholder="Search"
+                            class="bg-transparent text-white text-sm outline-none w-36 placeholder-gray-500"
+                            onkeyup="searchTable()">
+                    </div>
+
+                    <!-- Form -->
+                    <form method="POST" action="/data_add" class="flex items-end gap-4 flex-1">
+
+                        <!-- Site Name -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-gray-400 text-xs">Site Name</label>
+                            <input type="text" name="name" placeholder="Site name" required
+                                class="bg-transparent text-white text-sm outline-none rounded-lg px-4 py-2 placeholder-gray-600 w-44"
+                                style="border: 1px solid rgba(255,255,255,0.08);">
+                        </div>
+
+                        <!-- Site URL -->
+                        <div class="flex flex-col gap-1 flex-1">
+                            <label class="text-gray-400 text-xs">Site URL</label>
+                            <input type="url" name="url" placeholder="Enter URL" required
+                                class="bg-transparent text-white text-sm outline-none rounded-lg px-4 py-2 placeholder-gray-600 w-full"
+                                style="border: 1px solid rgba(255,255,255,0.08);">
+                        </div>
+
+                        <!-- Add button -->
+                        <button type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition duration-200">
+                            Add
+                        </button>
+
+                    </form>
+                </div>
+
+                <!-- Table card -->
+                <div class="flex-1 mx-4 mb-4 rounded-xl overflow-hidden"
+                    style="background: rgba(255,255,255,0.02);
+                           border: 1px solid rgba(255,255,255,0.08);">
+                    <table class="w-full text-sm" id="endpointTable">
+                        <thead>
+                            <tr>
+                                <th class="text-left px-6 py-4 font-medium text-gray-400">Site Name</th>
+                                <th class="text-left px-6 py-4 font-medium text-gray-400">Site URL</th>
+                                <th class="text-left px-6 py-4 font-medium text-gray-400">Status code</th>
+                                <th class="text-left px-6 py-4 font-medium text-gray-400">Time elapsed</th>
+                                <th class="px-6 py-4"></th>
+                                <th class="px-6 py-4"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for endpoint in endpoints %}
+                            <tr class="hover:bg-white/5 transition"
+                                style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <td class="px-6 py-4 text-white font-medium">{{ endpoint.name }}</td>
+                                <td class="px-6 py-4 text-gray-400">{{ endpoint.url }}</td>
+                                <td class="px-6 py-4">
+                                    {% if logs[endpoint.id] and logs[endpoint.id].status_code %}
+                                        {% if logs[endpoint.id].status_code == 200 %}
+                                            <span class="flex items-center gap-2 text-green-400">
+                                                <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+                                                {{ logs[endpoint.id].status_code }}
+                                            </span>
+                                        {% else %}
+                                            <span class="flex items-center gap-2 text-red-400">
+                                                <span class="w-2 h-2 rounded-full bg-red-400 inline-block"></span>
+                                                {{ logs[endpoint.id].status_code }}
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-gray-500">--</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 text-gray-400">
+                                    {% if logs[endpoint.id] and logs[endpoint.id].response_time %}
+                                        {{ "%.2f"|format(logs[endpoint.id].response_time) }}s
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <form method="POST" action="/delete/{{ endpoint.id }}">
+                                        <button type="submit"
+                                            class="text-red-400 hover:text-red-300 text-sm transition">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <a href="/update/{{ endpoint.id }}"
+                                        class="text-blue-400 hover:text-blue-300 text-sm transition">
+                                        Edit
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Stats bar — only top border -->
+                <div class="flex gap-4 px-8 py-4 text-sm text-gray-400">
+                    <span>Total site: <span class="text-white font-semibold">{{ total }}</span></span>
+                    <span>UP: <span class="text-green-400 font-semibold">{{ up }}</span></span>
+                    <span>DOWN: <span class="text-red-400 font-semibold">{{ down }}</span></span>
+                    <span>Average Response Time: <span class="text-white font-semibold">{{ avg_time }}s</span></span>
+                </div>
+
+            </div>
+        </div>
     </div>
-</body>
 
+    <!-- Search JavaScript -->
+    <script>
+        function searchTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#endpointTable tbody tr');
+            rows.forEach(row => {
+                const name = row.cells[0].textContent.toLowerCase();
+                const url = row.cells[1].textContent.toLowerCase();
+                if (name.includes(input) || url.includes(input)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+</body>
 </html>
