@@ -20,9 +20,7 @@ def base():
 
 with app.app_context():
     db.create_all()
-    print("Tables created successfully!")
     scheduler.start(app)
-    print("Scheduler started!")
 
 if __name__ == '__main__':
     app.run(debug=True)
