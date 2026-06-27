@@ -21,7 +21,7 @@
     </div>
 
     <!-- Card -->
-    <div class="relative z-10 flex flex-col bg-[#1a1a1a] rounded-2xl p-10 w-[580px]">
+    <div class="relative z-10 flex flex-col bg-[#1a1a1a] rounded-2xl p-10 w-full max-w-[580px] mx-4">
 
         <!-- Logo -->
         <h1 class="text-white text-2xl font-bold">Argus</h1>
@@ -43,7 +43,7 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        
+
         <!-- Form -->
         <form method="POST" action="/login" class="flex flex-col">
             <!-- Email -->

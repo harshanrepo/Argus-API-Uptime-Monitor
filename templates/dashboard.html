@@ -23,7 +23,7 @@
 
         <!-- Top Navbar — no bottom border -->
         <div class="flex justify-between items-center px-8 py-5">
-            <h1 class="text-white font-bold text-xl">Argus</h1>
+            <h1 class="text-white font-bold text-xl"><a href="/">Argus</a></h1>
             <!-- Flash messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -41,9 +41,8 @@
 
         <!-- Body layout -->
         <div class="flex flex-1">
-
-            <!-- Sidebar — no right border -->
-            <div class="w-36 flex flex-col justify-center gap-3 px-5 py-6">
+            <!-- Sidebar-->
+            <div class="hidden md:flex w-36 flex-col justify-center gap-3 px-5 py-6">
                 <a href="/"
                     class="flex items-center gap-3  hover:text-white transition text-sm py-2 px-3 rounded-lg hover:bg-white/5">
                     <span><i class="fa fa-home"></i></span> Home
@@ -57,8 +56,8 @@
             <!-- Main content -->
             <div class=" flex-1 flex flex-col">
 
-                            <!-- Add form row — no borders -->
-                            <div class="flex items-end gap-4 px-6 py-5">
+                            <!-- Add form row -->
+                            <div class="flex flex-col md:flex-row items-end gap-4 px-4 md:px-6 py-5">
 
                                 <!-- Search -->
                                 <div class="flex items-center gap-2 px-4 py-2 rounded-lg"
@@ -69,11 +68,8 @@
                                         onkeyup="searchTable()">
                                 </div>
 
-
-
                                 <!-- Form -->
-                                <form method="POST" action="/data_add" class="flex items-end gap-4 flex-1">
-
+                                <form method="POST" action="/data_add" class="flex flex-col md:flex-row items-end gap-4 flex-1">
                                     <!-- Site Name -->
                                     <div class="flex flex-col gap-1">
                                         <label class="text-gray-400 text-xs">Site Name</label>
@@ -100,7 +96,7 @@
                             </div>
 
                             <!-- Table card -->
-                            <div class="flex-1 mx-4 mb-4 rounded-xl overflow-hidden" style="background: rgba(255,255,255,0.02);
+                            <div class="flex-1 mx-2 md:mx-4 mb-4 rounded-xl overflow-x-auto" style="background: rgba(255,255,255,0.02);
                            border: 1px solid rgba(255,255,255,0.08);">
                                 <table class="w-full text-sm" id="endpointTable">
                                     <thead>
@@ -164,7 +160,7 @@
                             </div>
 
                             <!-- Stats bar — only top border -->
-                            <div class="flex gap-4 px-8 py-4 text-sm text-gray-400">
+                            <div class="flex flex-wrap gap-4 px-4 md:px-8 py-4 text-sm text-gray-400">
                                 <span>Total site: <span class="text-white font-semibold">{{ total }}</span></span>
                                 <span>UP: <span class="text-green-400 font-semibold">{{ up }}</span></span>
                                 <span>DOWN: <span class="text-red-400 font-semibold">{{ down }}</span></span>
@@ -195,5 +191,4 @@
     </script>
 
 </body>
-
 </html>
