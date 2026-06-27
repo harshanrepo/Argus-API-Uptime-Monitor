@@ -12,11 +12,11 @@
 
 <body class="min-h-screen flex items-center justify-center bg-black font-['Space_Grotesk']">
     <div
-        class="fixed bottom-0 right-0 w-[500px] h-[700px] bg-[#1A1894] opacity-60 blur-[80px] rotate-[-30deg] translate-x-32 translate-y-32 z-0">
+        class="fixed -bottom-20 right-0 w-[500px] h-[700px] bg-[#1A1894] opacity-60 blur-[100px] rotate-[-30deg] translate-x-32 translate-y-32 z-0">
     </div>
 
     <div
-        class="fixed bottom-0 right-0 w-[400px] h-[600px] bg-[#A8A5FE] opacity-60 blur-[80px] rotate-[-50deg] translate-x-48 translate-y-48 z-0">
+        class="fixed -bottom-20 right-0 w-[400px] h-[600px] bg-[#A8A5FE] opacity-60 blur-[100px] rotate-[-50deg] translate-x-48 translate-y-48 z-0">
     </div>
 
     <!-- Card -->
@@ -30,20 +30,35 @@
         <h2 class="text-white text-xl font-semibold">Start Monitoring Today</h2>
         <p class="text-white text-xl mb-8">Set up your first endpoint in seconds.</p>
 
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-lg mb-4">
+            ⚠️ {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
         <!-- Form -->
         <form method="POST" action="/register" class="flex flex-col">
             <!-- Email -->
             <div class="mb-4">
                 <label class="block text-white text-sm mb-2">Email</label>
                 <input type="email" name="email" placeholder="Enter your email"
-                    class="block w-full bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg px-4 py-3 text-white outline-none focus:border-[#4B45C6] transition" required>
+                    class="block w-full bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg px-4 py-3 text-white outline-none focus:border-[#4B45C6] transition"
+                    required>
             </div>
 
             <!-- Password -->
             <div class="mb-6">
                 <label class="block text-white text-sm mb-2">Password</label>
                 <input type="password" name="password" placeholder="Enter your password"
-                    class="block w-full bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg px-4 py-3 text-white outline-none focus:border-[#4B45C6] transition" minlength="6" required>
+                    class="block w-full bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg px-4 py-3 text-white outline-none focus:border-[#4B45C6] transition"
+                    minlength="6" required>
             </div>
 
             <button type="submit"

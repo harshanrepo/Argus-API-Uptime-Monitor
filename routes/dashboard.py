@@ -1,4 +1,4 @@
-from flask import Blueprint,render_template,session,redirect,request
+from flask import Blueprint,render_template,session,redirect,request,flash
 from database.schema import db,Users,Endpoint,Pinglog
 dashboard=Blueprint('dashboard',__name__)
 
@@ -11,7 +11,8 @@ def add():
         url = request.form['url']
         user_exit = Endpoint.query.filter_by(url=url).first()
         if user_exit:
-            return 'URL exist already'
+            flash('URL already exist','error')
+            return redirect('/dashboard')
         new_endpoint = Endpoint(name=name, url=url, user_id=session['user_id'])
         db.session.add(new_endpoint)
         db.session.commit()
